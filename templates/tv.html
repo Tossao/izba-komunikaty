@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Ekran Izby Przyjęć</title>
+    <link rel="stylesheet" href="../static/style_tv.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <img src="https://szpitalprosta.pl/wp-content/themes/szpitalprosta/images/logo/logo.png" alt="Logo Szpitala">
+    <div class="header-title">Izba Przyjęć</div>
+</div>
+
+<div id="display-box" class="box">
+    <div id="message" class="message">PROSZĘ OCZEKIWAĆ NA WEZWANIE</div>
+</div>
+
+<script>
+    const socket = io();
+    const messageEl = document.getElementById('message');
+    const boxEl = document.getElementById('display-box');
+
+    let resetTimer = null;
+    let audioCtx = null;
+
+    // Inicjalizacja AudioContext
+    function getAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    // Odblokowywanie audio przy pierwszym kliknięciu w ekran TV
+    window.addEventListener('click', () => {
+        getAudioContext();
+    });
+
+    function playGong() {
+        try {
+            const ctx = getAudioContext();
+
+            // Jeśli nadal zablokowane, pomijamy sygnał
+            if (ctx.state === 'suspended') {
+                console.warn("Dźwięk zablokowany przez przeglądarkę. Kliknij raz na ekranie TV!");
+                return;
+            }
+
+            // Pierwszy ton (Ding)
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(659.25, ctx.currentTime);
+            gain1.gain.setValueAtTime(0.6, ctx.currentTime);
+            gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(ctx.currentTime);
+            osc1.stop(ctx.currentTime + 0.8);
+
+            // Drugi ton (Dong)
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(523.25, ctx.currentTime + 0.35);
+            gain2.gain.setValueAtTime(0.7, ctx.currentTime + 0.35);
+            gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.6);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(ctx.currentTime + 0.35);
+            osc2.stop(ctx.currentTime + 1.6);
+
+        } catch (e) {
+            console.error("Błąd odtwarzania dźwięku:", e);
+        }
+    }
+
+    socket.on('update_tv', function(data) {
+        playGong();
+
+        messageEl.innerText = data.text;
+        boxEl.classList.add('active');
+
+        if (resetTimer) clearTimeout(resetTimer);
+
+        const duration = (data.duration || 15) * 1000;
+        resetTimer = setTimeout(() => {
+            messageEl.innerText = "PROSZĘ OCZEKIWAĆ NA WEZWANIE";
+            boxEl.classList.remove('active');
+        }, duration);
+    });
+</script>
+</body>
+</html>

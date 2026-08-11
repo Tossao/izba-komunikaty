@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Sterowania - Izba Przyjęć</title>
+    <link rel="stylesheet" href="../static/style_panel.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+
+<h1>Panel Wezwań Pacjentów</h1>
+
+<div class="grid">
+    <button class="btn" onclick="send('ZAPRASZAM DO GABINETU NR 1')">Gabinet nr 1</button>
+    <button class="btn" onclick="send('ZAPRASZAM DO GABINETU NR 2')">Gabinet nr 2</button>
+    <button class="btn" onclick="send('ZAPRASZAM DO REJESTRACJI')">Rejestracja</button>
+    <button class="btn btn-urgent" onclick="send('NASTĘPNY PACJENT')">Następny pacjent</button>
+</div>
+
+<div class="custom-section">
+    <label for="customText" class="custom-label">Wpisz własny komunikat:</label>
+    <div class="input-group">
+        <input type="text" id="customText" placeholder="np. PROSZĘ O SPOKOJNE OCZEKIWANIE">
+        <button class="btn btn-send" onclick="sendCustom()">Wyślij</button>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+
+    function send(text) {
+        socket.emit('send_message', { text: text, duration: 15 });
+    }
+
+    function sendCustom() {
+        const input = document.getElementById('customText');
+        if (input.value.trim() !== '') {
+            send(input.value.toUpperCase());
+            input.value = '';
+        }
+    }
+</script>
+</body>
+</html>
