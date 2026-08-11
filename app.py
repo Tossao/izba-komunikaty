@@ -7,7 +7,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'izba_przyjec_secret_123')
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Domyślny login i hasło do panelu (można też zmienić w zmiennych środowiskowych na Renderze)
 PANEL_USERNAME = os.environ.get('PANEL_USER', 'admin')
 PANEL_PASSWORD = os.environ.get('PANEL_PASS', 'szpital123')
 
@@ -27,13 +26,7 @@ def requires_auth(f):
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)
-        return decorated
-
-# Domyślny stan ekranu
-current_state = {
-    "message": "PROSZĘ OCZEKIWAĆ NA WEZWANIE",
-    "is_active": False
-}
+    return decorated
 
 @app.route('/')
 @app.route('/panel')
@@ -47,7 +40,6 @@ def tv():
 
 @socketio.on('send_message')
 def handle_message(data):
-    # data = {'text': 'ZAPRASZAM DO GABINETU NR 1', 'duration': 15}
     emit('update_tv', data, broadcast=True)
 
 if __name__ == '__main__':
