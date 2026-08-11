@@ -1,10 +1,33 @@
 import os
-from flask import Flask, render_template
+from functools import wraps
+from flask import Flask, render_template, request, Response
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'izba_przyjec_secret_123'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'izba_przyjec_secret_123')
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Domyślny login i hasło do panelu (można też zmienić w zmiennych środowiskowych na Renderze)
+PANEL_USERNAME = os.environ.get('PANEL_USER', 'admin')
+PANEL_PASSWORD = os.environ.get('PANEL_PASS', 'szpital123')
+
+def check_auth(username, password):
+    return username == PANEL_USERNAME and password == PANEL_PASSWORD
+
+def authenticate():
+    return Response(
+        'Wymagana autoryzacja do dostępu do panelu.', 401,
+        {'WWW-Authenticate': 'Basic realm="Dostep tylko dla personelu"'}
+    )
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+        return decorated
 
 # Domyślny stan ekranu
 current_state = {
@@ -14,6 +37,7 @@ current_state = {
 
 @app.route('/')
 @app.route('/panel')
+@requires_auth
 def panel():
     return render_template('panel.html')
 
