@@ -26,7 +26,7 @@
 </div>
 
 <script>
-    const socket = io();
+    var socket = io({transports: ['polling']});
 
     function send(text) {
         socket.emit('send_message', { text: text, duration: 15 });
