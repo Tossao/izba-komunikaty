@@ -18,7 +18,7 @@
 </div>
 
 <script>
-    const socket = io();
+    var socket = io({transports: ['polling']});
     const messageEl = document.getElementById('message');
     const boxEl = document.getElementById('display-box');
 
