@@ -51,7 +51,7 @@
         fullText = `NUMER ${num}\n${actionText}`;
         }
 
-        socket.emit('send_message', { text: fullText.toUpperCase(), duration: 15 });
+        socket.emit('send_message', { text: fullText.toUpperCase(), duration: 30 });
 
         // Czyszczenie pola z numerem po wywołaniu
         numberInput.value = '';
