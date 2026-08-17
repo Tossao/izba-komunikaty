@@ -93,7 +93,7 @@
 
         if (resetTimer) clearTimeout(resetTimer);
 
-        const duration = (data.duration || 15) * 1000;
+        const duration = (data.duration || 30) * 1000;
         resetTimer = setTimeout(() => {
             messageEl.innerText = "PROSZĘ OCZEKIWAĆ NA WEZWANIE";
             boxEl.classList.remove('active');
