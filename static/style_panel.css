@@ -84,3 +84,29 @@ input[type="text"] {
 .btn-send:hover {
     background-color: #1e7e34;
 }
+
+.number-section {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.number-section input {
+    width: 200px;
+    padding: 12px 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid #4da6ff;
+    background-color: #0d1b2a;
+    color: #ffffff;
+}
+
+.number-section input:focus {
+    outline: none;
+    border-color: #ffb703;
+    box-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+}
