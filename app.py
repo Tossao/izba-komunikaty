@@ -45,3 +45,18 @@ def handle_message(data):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     socketio.run(app, host='0.0.0.0', port=port)
+
+# Zmienna przechowująca stan
+current_doctor = ""
+
+@socketio.on('connect')
+def handle_connect():
+    # Przy połączeniu wysyłamy aktualnego lekarza do nowego klienta
+    emit('update_doctor', {'doctor': current_doctor})
+
+@socketio.on('change_doctor')
+def handle_change_doctor(data):
+    global current_doctor
+    current_doctor = data.get('doctor', '')
+    # Rozsyłamy informację do wszystkich połączonych ekranów (TV i panel)
+    emit('update_doctor', {'doctor': current_doctor}, broadcast=True)
