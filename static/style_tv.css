@@ -100,6 +100,7 @@ body {
     font-weight: 800;
     line-height: 1.2;
     color: #e0e1dd;
+    white-space: pre-line; /* <-- Ta linijka odpowiada za łamanie wiersza */
 }
 
 .box.active .message {
