@@ -10,10 +10,16 @@
 
 <h1>Panel Wezwań Pacjentów</h1>
 
+<!-- Sekcja wpisywania numeru pacjenta -->
+<div class="number-section">
+    <label for="patientNumber" class="custom-label">Numer pacjenta:</label>
+    <input type="number" id="patientNumber" placeholder="np. 8" min="1">
+</div>
+
 <div class="grid">
-    <button class="btn" onclick="send('ZAPRASZAM DO GABINETU NR 1')">Gabinet nr 1</button>
-    <button class="btn" onclick="send('ZAPRASZAM DO GABINETU NR 2')">Gabinet nr 2</button>
-    <button class="btn" onclick="send('ZAPRASZAM DO REJESTRACJI')">Rejestracja</button>
+    <button class="btn" onclick="send('ZAPRASZAMY DO GABINETU NR 1')">Gabinet nr 1</button>
+    <button class="btn" onclick="send('ZAPRASZAMY DO GABINETU NR 2')">Gabinet nr 2</button>
+    <button class="btn" onclick="send('ZAPRASZAMY DO REJESTRACJI')">Rejestracja</button>
     <button class="btn btn-urgent" onclick="send('NASTĘPNY PACJENT')">Następny pacjent</button>
 </div>
 
@@ -34,8 +40,21 @@
 <script>
     var socket = io({transports: ['polling']});
 
-    function send(text) {
-        socket.emit('send_message', { text: text, duration: 15 });
+    function send(actionText) {
+        const numberInput = document.getElementById('patientNumber');
+        const num = numberInput.value.trim();
+
+        let fullText = actionText;
+
+        // Jeśli podano numer, doklejamy go na początku komunikatu
+        if (num !== '') {
+            fullText = `NUMER ${num} - ${actionText}`;
+        }
+
+        socket.emit('send_message', { text: fullText.toUpperCase(), duration: 15 });
+
+        // Czyszczenie pola z numerem po wywołaniu
+        numberInput.value = '';
     }
 
     function sendCustom() {
