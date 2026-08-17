@@ -50,7 +50,6 @@
         try {
             const ctx = getAudioContext();
 
-            // Jeśli nadal zablokowane, pomijamy sygnał
             if (ctx.state === 'suspended') {
                 console.warn("Dźwięk zablokowany przez przeglądarkę. Kliknij raz na ekranie TV!");
                 return;
@@ -85,6 +84,7 @@
         }
     }
 
+    // Odbieranie nowych komunikatów na TV
     socket.on('update_tv', function(data) {
         playGong();
 
@@ -98,6 +98,15 @@
             messageEl.innerText = "PROSZĘ OCZEKIWAĆ NA WEZWANIE";
             boxEl.classList.remove('active');
         }, duration);
+    });
+
+    // Odbieranie informacji o lekarzu dyżurnym
+    socket.on('update_doctor', function(data) {
+        if (data && data.doctor && data.doctor.trim() !== '') {
+            document.getElementById('doctorName').innerText = data.doctor;
+        } else {
+            document.getElementById('doctorName').innerText = '---';
+        }
     });
 </script>
 </body>
