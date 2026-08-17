@@ -48,7 +48,7 @@
 
         // Jeśli podano numer, doklejamy go na początku komunikatu
         if (num !== '') {
-            fullText = `NUMER ${num} - ${actionText}`;
+        fullText = `NUMER ${num}\n${actionText}`;
         }
 
         socket.emit('send_message', { text: fullText.toUpperCase(), duration: 15 });
