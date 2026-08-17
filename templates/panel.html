@@ -25,6 +25,27 @@
     </div>
 </div>
 
+<!-- HTML w panelu -->
+<div class="doctor-control-section">
+    <label for="doctorInput">Lekarz dyżurny:</label>
+    <input type="text" id="doctorInput" placeholder="Imię i nazwisko lekarza">
+    <button onclick="updateDoctor()">Zapisz lekarza</button>
+</div>
+
+<!-- JS w panelu -->
+<script>
+    function updateDoctor() {
+        const doctorName = document.getElementById('doctorInput').value;
+        socket.emit('change_doctor', { doctor: doctorName });
+    }
+
+    // Opcjonalnie: aktualizuj pole w panelu gdy ktoś inny zmieni wartość
+    socket.on('update_doctor', function(data) {
+        document.getElementById('doctorInput').value = data.doctor;
+    });
+</script>
+
+    
 <script>
     var socket = io({transports: ['polling']});
 
@@ -40,5 +61,6 @@
         }
     }
 </script>
+    
 </body>
 </html>
